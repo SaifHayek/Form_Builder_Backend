@@ -1,7 +1,7 @@
 from sqlmodel import Field, SQLModel, Column
 from sqlalchemy.dialects.postgresql import JSONB
-from pydantic import BaseModel, model_validator
-from typing import List
+from pydantic import BaseModel, model_validator, field_validator
+from typing import List, Optional
 from enum import Enum
 
 class FieldType(Enum):
@@ -18,10 +18,10 @@ class FieldType(Enum):
 class ValidationModel(BaseModel):
     required: bool
     hide: bool
-    min_length: int | None = Field(default=None, ge=0)
-    max_length: int | None = Field(default=None, ge=0)
-    min_value: int | None = Field(default=None)
-    max_value: int | None = Field(default=None)
+    min_length: Optional[int] = Field(default=None, ge=0)
+    max_length: Optional[int] = Field(default=None, ge=0)
+    min_value: Optional[int] = Field(default=None)
+    max_value: Optional[int] = Field(default=None)
     
 
     
@@ -35,12 +35,12 @@ class ChoicesModel(BaseModel):
 class FormFieldModel(BaseModel):
     id: str
     type: FieldType
-    placeholder_en: str | None = Field(default="")
-    placeholder_ar: str | None = Field(default="")
+    placeholder_en: Optional[str] = Field(default="")
+    placeholder_ar: Optional[str] = Field(default="")
     order: int = Field(gt=0)
     label_en: str = Field(nullable=False)
     label_ar: str = Field(nullable=False)
-    choices: List[ChoicesModel] | None = Field(sa_column=Column(JSONB), default_factory=list)
+    choices: Optional[List[ChoicesModel]] = Field(sa_column=Column(JSONB), default_factory=list)
     validation: ValidationModel = Field(sa_column=Column(JSONB))
     
         
@@ -50,8 +50,6 @@ class Form(SQLModel, table=True):
     title_en: str = Field(index=True, nullable=False, unique=True)
     title_ar: str = Field(index=True, nullable=False, unique=True)
     fields: List[FormFieldModel] = Field(sa_column=Column(JSONB), default_factory=list)
-    
-
     
 
 
@@ -69,7 +67,7 @@ class Form(SQLModel, table=True):
         for field in self.fields:
             self.create_form_field_model_from_dict(field) 
             if field['type'] in ['select', 'radio']: 
-                field['choices'] = self.create_choices_from_dict(field['choices'])
+                self.create_choices_from_dict(field['choices'])
                 
             if field['type'] in ['text', 'textarea', 'password']:
                 self._validate_length(field)

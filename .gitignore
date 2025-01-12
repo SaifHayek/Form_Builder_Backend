@@ -21,3 +21,56 @@ venv/
 # Byte-compiled, binary, and log files
 *.log
 *.sqlite3
+
+.vercel
+
+# Python cache files
+__pycache__/
+*.py[cod]
+*.pyo
+*.pyd
+
+# Virtual environment
+venv
+venv/
+.env/
+*.env
+
+# IDE specific files
+.idea/
+.vscode/
+*.swp
+
+# Logs and debugging
+*.log
+*.sqlite3
+debug/
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Mypy cache
+.mypy_cache/
+.dmypy.json
+dmypy.json
+
+# Pytest cache
+.pytest_cache/
+
+# Coverage reports
+htmlcov/
+.coverage
+*.cover
+.coverage.*
+
+# Build and distribution files
+build/
+dist/
+*.egg-info/
+.eggs/
+
+
+# Pydantic models cache
+.pydantic/
+

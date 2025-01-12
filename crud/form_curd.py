@@ -38,10 +38,18 @@ def delete_form(session: SessionDep, id: int):
 
 
 def update_form(session: SessionDep, id: int, updated_data: Form):
-    form = session.get(Form, id)
-    if form:
-        form.title = updated_data.title
-        form.fields = updated_data.fields
-        session.commit()
-        session.refresh(form)
-    return form
+    try: 
+        form = session.get(Form, id)
+        if form:
+            # update form
+            form.title_ar = updated_data.title_ar
+            form.title_en = updated_data.title_en
+            form.fields = updated_data.fields
+            session.commit()
+            session.refresh(form)
+        return form
+    except IntegrityError as e: 
+        session.rollback()
+        if "unique constraint" in str(e.orig).lower():
+            raise HTTPException(status_code=400, detail="Form title must be unique.")
+        raise HTTPException(status_code=500, detail="An error occurred while creating the form.")
